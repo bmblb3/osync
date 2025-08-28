@@ -23,6 +23,8 @@ class RsyncCommand:
         push: bool,
         pull: bool,
         force: bool,
+        source: str,
+        dest: str,
         file_patterns: list[FilePattern],
         remote_user_host: str | None = None,
     ):
@@ -37,9 +39,8 @@ class RsyncCommand:
         self.pull: bool = pull
         self.force: bool = force
         self.file_patterns: list[FilePattern] = file_patterns
-        self.args: list[str] = self.BASE_ARGS.copy()
 
-    def build(self, source: str, dest: str):
+        self.args: list[str] = self.BASE_ARGS.copy()
         patterns = [
             pattern
             for pattern in self.file_patterns

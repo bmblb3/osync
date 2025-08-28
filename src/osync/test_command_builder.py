@@ -33,6 +33,8 @@ class TestRsyncCommand(unittest.TestCase):
                 pull=False,
                 force=False,
                 file_patterns=[],
+                source="/src/",
+                dest="/dst/",
             )
             self.assertEqual("test_value", cmd.remote_user_host)
 
@@ -43,6 +45,8 @@ class TestRsyncCommand(unittest.TestCase):
                 pull=False,
                 force=False,
                 file_patterns=[],
+                source="/src/",
+                dest="/dst/",
             )
 
     def test_build_has_base_args(self):
@@ -52,8 +56,9 @@ class TestRsyncCommand(unittest.TestCase):
             pull=False,
             force=False,
             file_patterns=[],
+            source="/src/",
+            dest="/dst/",
         )
-        cmd.build("/src/", "/dst/")
         self.assertIn("rsync", cmd.args)
         self.assertIn("--recursive", cmd.args)
 
@@ -68,8 +73,9 @@ class TestRsyncCommand(unittest.TestCase):
                 DummyPattern(pull=True, rsync_args=["pullarg"]),
                 DummyPattern(push=True, pull=True, rsync_args=["botharg"]),
             ],
+            source="/src/",
+            dest="/dst/",
         )
-        cmd.build("/src/", "/dst/")
         self.assertIn("rsync", cmd.args)
         self.assertIn("pusharg", cmd.args)
         self.assertNotIn("pullarg", cmd.args)
@@ -87,8 +93,9 @@ class TestRsyncCommand(unittest.TestCase):
                 DummyPattern(pull=True, rsync_args=["pullarg"]),
                 DummyPattern(push=True, pull=True, rsync_args=["botharg"]),
             ],
+            source="/src/",
+            dest="/dst/",
         )
-        cmd.build("/src/", "/dst/")
         self.assertIn("rsync", cmd.args)
         self.assertNotIn("pusharg", cmd.args)
         self.assertIn("pullarg", cmd.args)
@@ -102,8 +109,9 @@ class TestRsyncCommand(unittest.TestCase):
             pull=False,
             force=True,
             file_patterns=[],
+            source="/src/",
+            dest="/dst/",
         )
-        cmd.build("/src/", "/dst/")
         self.assertNotIn("--exclude=*", cmd.args)
 
     def test_build_noforce(self):
@@ -113,8 +121,9 @@ class TestRsyncCommand(unittest.TestCase):
             pull=False,
             force=False,
             file_patterns=[],
+            source="/src/",
+            dest="/dst/",
         )
-        cmd.build("/src/", "/dst/")
         self.assertIn("--exclude=*", cmd.args)
 
     def test_build_multiple_pushargs(self):
@@ -129,8 +138,9 @@ class TestRsyncCommand(unittest.TestCase):
                 DummyPattern(pull=True, rsync_args=["pullarg"]),
                 DummyPattern(push=True, pull=True, rsync_args=["botharg"]),
             ],
+            source="/src/",
+            dest="/dst/",
         )
-        cmd.build("/src/", "/dst/")
         self.assertIn("rsync", cmd.args)
         self.assertIn("pushargA1", cmd.args)
         self.assertIn("pushargA2", cmd.args)
