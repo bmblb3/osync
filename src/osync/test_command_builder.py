@@ -1,5 +1,7 @@
+import os
 import unittest
 from typing import override
+from unittest.mock import patch
 
 from .command_builder import RsyncCommand
 from .file_pattern import FilePattern
@@ -23,6 +25,26 @@ class DummyPattern(FilePattern):
 
 
 class TestRsyncCommand(unittest.TestCase):
+    def test_env_var(self):
+        with patch.dict(os.environ, {"OSYNC_REMOTE_USER_HOST": "test_value"}):
+            assert os.environ["OSYNC_REMOTE_USER_HOST"] == "test_value"
+            cmd = RsyncCommand(
+                push=True,
+                pull=False,
+                force=False,
+                file_patterns=[],
+            )
+            self.assertEqual("test_value", cmd.remote_user_host)
+
+    def test_raises_error_when_no_env_var(self):
+        with self.assertRaisesRegex(ValueError, "(E|e)nvironment (V|v)ariable"):
+            _ = RsyncCommand(
+                push=True,
+                pull=False,
+                force=False,
+                file_patterns=[],
+            )
+
     def test_build_has_base_args(self):
         cmd = RsyncCommand(
             remote_user_host="user@host",

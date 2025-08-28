@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 from .file_pattern import FilePattern
@@ -19,12 +20,18 @@ class RsyncCommand:
 
     def __init__(
         self,
-        remote_user_host: str,
         push: bool,
         pull: bool,
         force: bool,
         file_patterns: list[FilePattern],
+        remote_user_host: str | None = None,
     ):
+        if remote_user_host is None:
+            remote_user_host = dict(os.environ).get("OSYNC_REMOTE_USER_HOST", "")
+        if remote_user_host == "":
+            raise ValueError(
+                "Undefined or empty environment variable OSYNC_REMOTE_USER_HOST"
+            )
         self.remote_user_host: str = remote_user_host
         self.push: bool = push
         self.pull: bool = pull

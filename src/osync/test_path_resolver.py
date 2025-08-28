@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from typing import override
+from unittest.mock import patch
 
 from .path_resolver import PathResolver
 
@@ -24,6 +25,16 @@ class TestPathResolver(unittest.TestCase):
     def tearDown(self) -> None:
         shutil.rmtree(self.proxy_root, ignore_errors=True)
         shutil.rmtree(self.cwd, ignore_errors=True)
+
+    def test_env_var(self):
+        with patch.dict(os.environ, {"OSYNC_PROXY_ROOT": "test_value"}):
+            assert os.environ["OSYNC_PROXY_ROOT"] == "test_value"
+            path_resolver = PathResolver()
+            self.assertEqual("test_value", path_resolver.proxy_root.as_posix())
+
+    def test_raises_error_when_no_env_var(self):
+        with self.assertRaisesRegex(ValueError, "(E|e)nvironment (V|v)ariable"):
+            _ = PathResolver()
 
     # TO_REMOTE
     def test__with_abspath_just_under_proxy_root__gets_remote(self) -> None:
