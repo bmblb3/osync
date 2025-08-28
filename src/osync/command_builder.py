@@ -18,8 +18,14 @@ class RsyncCommand:
     ]
 
     def __init__(
-        self, push: bool, pull: bool, force: bool, file_patterns: list[FilePattern]
+        self,
+        remote_user_host: str,
+        push: bool,
+        pull: bool,
+        force: bool,
+        file_patterns: list[FilePattern],
     ):
+        self.remote_user_host: str = remote_user_host
         self.push: bool = push
         self.pull: bool = pull
         self.force: bool = force
@@ -38,7 +44,12 @@ class RsyncCommand:
         if not self.force:
             args.extend(["--exclude=*"])
 
+        if self.pull:
+            source = self.remote_user_host + ":" + source
+        if self.push:
+            dest = self.remote_user_host + ":" + dest
         args.extend([source, dest])
+
         return args
 
     def execute(self, args: list[str]) -> None:
