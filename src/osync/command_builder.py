@@ -37,30 +37,28 @@ class RsyncCommand:
         self.pull: bool = pull
         self.force: bool = force
         self.file_patterns: list[FilePattern] = file_patterns
+        self.args: list[str] = self.BASE_ARGS.copy()
 
-    def build(self, source: str, dest: str) -> list[str]:
+    def build(self, source: str, dest: str):
         patterns = [
             pattern
             for pattern in self.file_patterns
             if (pattern.push if self.push else pattern.pull)
         ]
 
-        args = self.BASE_ARGS.copy()
         for pattern in patterns:
-            args.extend(pattern.rsync_args())
+            self.args.extend(pattern.rsync_args())
         if not self.force:
-            args.extend(["--exclude=*"])
+            self.args.extend(["--exclude=*"])
 
         if self.pull:
             source = self.remote_user_host + ":" + source
         if self.push:
             dest = self.remote_user_host + ":" + dest
-        args.extend([source, dest])
+        self.args.extend([source, dest])
 
-        return args
-
-    def execute(self, args: list[str]) -> None:
-        print(" ".join(args))
-        result = subprocess.run(args)
+    def execute(self) -> None:
+        print(" ".join(self.args))
+        result = subprocess.run(self.args)
         if result.returncode != 0:
             raise RuntimeError(f"rsync failed with code {result.returncode}")
