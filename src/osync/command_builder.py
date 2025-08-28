@@ -15,6 +15,8 @@ class RsyncCommand:
         "--update",  # skip files that are newer on the receiver
         "--perms",  # preserve permissions
         # "--exclude=.*", # exclude files matching PATTERN
+        "--exclude=.git",  # exclude files matching PATTERN
+        "--exclude=osync.yaml",  # exclude files matching PATTERN
         "--include=*/",  # don't exclude files matching PATTERN
     ]
 
