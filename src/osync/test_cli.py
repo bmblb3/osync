@@ -28,6 +28,14 @@ class TestCLI(unittest.TestCase):
         self.assertTrue(args.push)
         self.assertEqual(args.path, "foo/bar")
 
+    def test_dryrun_argument(self):
+        args = cli.main(["--push", "--dry-run", "foo/bar"])
+        self.assertTrue(args.dry_run)
+
+    def test_nodryrun_argument(self):
+        args = cli.main(["--push", "foo/bar"])
+        self.assertFalse(args.dry_run)
+
     def test_mutually_exclusive(self):
         with self.assertRaises(SystemExit):
             _ = cli.main(["--push", "--pull", "foo"])

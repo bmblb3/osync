@@ -29,6 +29,7 @@ class RsyncCommand:
         dest: str,
         file_patterns: list[FilePattern],
         remote_user_host: str | None = None,
+        dry_run: bool = False,
     ):
         if remote_user_host is None:
             remote_user_host = dict(os.environ).get("OSYNC_REMOTE_USER_HOST", "")
@@ -58,6 +59,8 @@ class RsyncCommand:
             source = self.remote_user_host + ":" + source
         if self.push:
             dest = self.remote_user_host + ":" + dest
+        if dry_run:
+            self.args.append("--dry-run")
         self.args.extend([source, dest])
 
     def execute(self) -> None:

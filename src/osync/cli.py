@@ -6,6 +6,7 @@ class Args(argparse.Namespace):
     push: bool = False
     pull: bool = False
     force: bool = False
+    dry_run: bool = False
     path: str = "."
 
 
@@ -20,6 +21,11 @@ def main(argv: list[str] | None = None):
         "--force",
         action="store_true",
         help="Just sync this thing, don't consider the pre-configured include/exclude patterns",
+    )
+    _ = parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Perform a dry run (don't actually sync)",
     )
     _ = parser.add_argument(
         "path",

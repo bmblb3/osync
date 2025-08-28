@@ -24,4 +24,5 @@ def main():
         file_patterns=file_patterns,
         source=source.as_posix(),
         dest=dest.parent.as_posix() + "/.",
+        dry_run=args.dry_run,
     ).execute()
