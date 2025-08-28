@@ -148,3 +148,32 @@ class TestRsyncCommand(unittest.TestCase):
         self.assertNotIn("pullarg", cmd.args)
         self.assertIn("botharg", cmd.args)
         self.assertEqual(cmd.args[-2:], ["/src/", "user@host:/dst/"])
+
+    def test_build_with_dryrun(self):
+        cmd = RsyncCommand(
+            remote_user_host="user@host",
+            push=True,
+            pull=False,
+            force=False,
+            file_patterns=[],
+            source="/src/",
+            dest="/dst/",
+            dry_run=True,
+        )
+        self.assertIn("rsync", cmd.args)
+        self.assertIn("--recursive", cmd.args)
+        self.assertIn("--dry-run", cmd.args)
+
+    def test_build_without_dryrun(self):
+        cmd = RsyncCommand(
+            remote_user_host="user@host",
+            push=True,
+            pull=False,
+            force=False,
+            file_patterns=[],
+            source="/src/",
+            dest="/dst/",
+        )
+        self.assertIn("rsync", cmd.args)
+        self.assertIn("--recursive", cmd.args)
+        self.assertNotIn("--dry-run", cmd.args)
