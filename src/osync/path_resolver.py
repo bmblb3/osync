@@ -5,7 +5,9 @@ from pathlib import Path
 class PathResolver:
     def __init__(self, proxy_root: str | None = None):
         if proxy_root is None:
-            proxy_root = os.environ["OSYNC_PROXY_ROOT"]
+            proxy_root = dict(os.environ).get("OSYNC_PROXY_ROOT", "")
+        if proxy_root == "":
+            raise ValueError("Undefined or empty environment variable OSYNC_PROXY_ROOT")
         self.proxy_root: Path = Path(proxy_root)
 
     def to_remote(self, path: str) -> Path:
