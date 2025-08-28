@@ -14,7 +14,7 @@ class RsyncCommand:
         "--times",  # preserve modification times
         "--update",  # skip files that are newer on the receiver
         "--perms",  # preserve permissions
-        # "--exclude=.git*",  # exclude files matching PATTERN
+        # "--exclude=.*", # exclude files matching PATTERN
         "--include=*/",  # don't exclude files matching PATTERN
     ]
 
