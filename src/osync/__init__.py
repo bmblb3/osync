@@ -17,12 +17,11 @@ def main():
     else:
         source = path_resolver.to_remote(args.path)
         dest = path_resolver.to_local(args.path)
-    cmd = RsyncCommand(
+    RsyncCommand(
         push=args.push,
         pull=args.pull,
         force=args.force,
         file_patterns=file_patterns,
         source=source.as_posix(),
         dest=dest.parent.as_posix() + "/.",
-    )
-    print(cmd.args)
+    ).execute()
