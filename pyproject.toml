@@ -1,0 +1,17 @@
+[project]
+name = "osync"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Akshay Kumar", email = "132216831+bmblb3@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+osync = "osync:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
