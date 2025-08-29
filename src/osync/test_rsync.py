@@ -3,8 +3,8 @@ import unittest
 from typing import override
 from unittest.mock import patch
 
-from .command_builder import RsyncCommand
 from .file_pattern import FilePattern
+from .rsync import RsyncCommand
 
 
 class DummyPattern(FilePattern):
@@ -14,7 +14,7 @@ class DummyPattern(FilePattern):
         pull: bool = False,
         rsync_args: list[str] | None = None,
     ):
-        super().__init__(desc="", patterns=[""])
+        super().__init__(desc="", patterns=[""], push=False, pull=False)
         self.push: bool = push
         self.pull: bool = pull
         self._rsync_args: list[str] = rsync_args or []
@@ -26,8 +26,8 @@ class DummyPattern(FilePattern):
 
 class TestRsyncCommand(unittest.TestCase):
     def test_env_var(self):
-        with patch.dict(os.environ, {"OSYNC_REMOTE_USER_HOST": "test_value"}):
-            assert os.environ["OSYNC_REMOTE_USER_HOST"] == "test_value"
+        with patch.dict(os.environ, {"OSYNC_REMOTE_USER_HOST": "NEWUSER@NEWHOST"}):
+            assert os.environ["OSYNC_REMOTE_USER_HOST"] == "NEWUSER@NEWHOST"
             cmd = RsyncCommand(
                 push=True,
                 pull=False,
@@ -36,7 +36,7 @@ class TestRsyncCommand(unittest.TestCase):
                 source="/src/",
                 dest="/dst/",
             )
-            self.assertEqual("test_value", cmd.remote_user_host)
+            self.assertEqual(cmd.args[-1:], ["NEWUSER@NEWHOST:/dst/"])
 
     def test_raises_error_when_no_env_var(self):
         with self.assertRaisesRegex(ValueError, "(E|e)nvironment (V|v)ariable"):

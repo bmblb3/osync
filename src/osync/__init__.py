@@ -1,8 +1,8 @@
 from . import cli
-from .command_builder import RsyncCommand
-from .file_patterns_builder import FilePatterns
+from .file_pattern import FilePatterns
 from .findup import findup
 from .path_resolver import PathResolver
+from .rsync import RsyncCommand
 
 
 def main():
@@ -17,6 +17,7 @@ def main():
     else:
         source = path_resolver.to_remote(args.path)
         dest = path_resolver.to_local(args.path)
+
     RsyncCommand(
         push=args.push,
         pull=args.pull,
