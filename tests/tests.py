@@ -283,7 +283,7 @@ def rsynccommand():
     return RsyncCommand(
         direction=Direction.PUSH,
         source="/src/",
-        dest="user@host:/dst/",
+        dest="/dst/",
         filter_groups=[],
     )
 
@@ -359,3 +359,11 @@ class TestRsyncCommand(unittest.TestCase):
         self.assertNotIn("pushargB1", rsync_cmd.args)
         self.assertNotIn("pushargB2", rsync_cmd.args)
         self.assertIn("pullarg", rsync_cmd.args)
+
+    def test_src_dest_come_last(self):
+        rsync_cmd = rsynccommand()
+        rsync_cmd.source = "/src/"
+        rsync_cmd.dest = "/dst/"
+        rsync_cmd.build()
+
+        self.assertEqual(rsync_cmd.args[-2:], ["/src/", "/dst/"])
