@@ -31,6 +31,7 @@ class FilterGroup:
     def parse_kind(cls, v: str | Kind) -> Kind:
         return v if isinstance(v, Kind) else Kind(v)
 
+    @property
     def rsync_args(self) -> list[str]:
         return [f"--{self.kind.value}={pat}" for pat in self.patterns]
 

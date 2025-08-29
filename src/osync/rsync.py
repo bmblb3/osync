@@ -1,47 +1,47 @@
 import os
 import subprocess
+from dataclasses import dataclass, field
 
 from .filter_group import Direction, FilterGroup
 
 
+@dataclass
 class RsyncCommand:
-    BASE_ARGS: list[str] = [
-        "rsync",
-        "--verbose",  # increase verbosity
-        "--recursive",  # recurse into directories
-        "--links",  # copy symlinks as symlinks
-        "--copy-unsafe-links",  # only "unsafe" symlinks are transformed
-        "--times",  # preserve modification times
-        "--update",  # skip files that are newer on the receiver
-        "--perms",  # preserve permissions
-    ]
+    direction: Direction
+    source: str
+    dest: str
+    filter_groups: list[FilterGroup]
+    force: bool = False
+    dry_run: bool = False
+    base_args: list[str] = field(
+        default_factory=lambda: [
+            "rsync",
+            "--verbose",  # increase verbosity
+            "--recursive",  # recurse into directories
+            "--links",  # copy symlinks as symlinks
+            "--copy-unsafe-links",  # only "unsafe" symlinks are transformed
+            "--times",  # preserve modification times
+            "--update",  # skip files that are newer on the receiver
+            "--perms",  # preserve permissions
+        ]
+    )
+    args: list[str] = field(default_factory=lambda: [])
 
-    def __init__(
-        self,
-        direction: Direction,
-        force: bool,
-        source: str,
-        dest: str,
-        filter_groups: list[FilterGroup],
-        dry_run: bool = False,
-    ):
-        self.args: list[str] = self.BASE_ARGS.copy()
+    def build(self):
+        self.args = self.base_args.copy()
 
-        if not force:
-            patterns = [
-                filter_group
-                for filter_group in filter_groups
-                if filter_group.direction == direction
-            ]
+        if not self.force:
+            self.args += [
+                arg
+                for filter_group in self.filter_groups
+                for arg in filter_group.rsync_args
+                if filter_group.direction == self.direction
+            ] + ["--exclude=*"]
 
-            for pattern in patterns:
-                self.args.extend(pattern.rsync_args())
-            self.args.extend(["--exclude=*"])
+        if self.dry_run:
+            self.args += ["--dry-run"]
 
-        if dry_run:
-            self.args.append("--dry-run")
-
-        self.args.extend([source, dest])
+        self.args += [self.source, self.dest]
 
     def execute(self) -> None:
         _ = subprocess.run(self.args)
