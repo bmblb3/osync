@@ -14,7 +14,7 @@ class DummyPattern(FilePattern):
         pull: bool = False,
         rsync_args: list[str] | None = None,
     ):
-        super().__init__(desc="", patterns=[""], push=False, pull=False)
+        super().__init__(desc="", type="include", patterns=[""], push=False, pull=False)
         self.push: bool = push
         self.pull: bool = pull
         self._rsync_args: list[str] = rsync_args or []

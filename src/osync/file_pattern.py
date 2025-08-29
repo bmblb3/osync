@@ -1,14 +1,16 @@
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import cast
 
 import yaml
 
-FILEPATTERN_DICT_TYPE = dict[str, str | list[str] | bool]
+FILEPATTERN_MAPPING_TYPE = Mapping[str, str | list[str] | bool]
 
 
 @dataclass
 class FilePattern:
     desc: str
+    type: str
     patterns: list[str]
     push: bool
     pull: bool
@@ -19,16 +21,17 @@ class FilePattern:
         return [f"--include={p}" for p in self.patterns]
 
     @classmethod
-    def from_dict(cls, in_dict: FILEPATTERN_DICT_TYPE):
+    def from_dict(cls, in_dict: FILEPATTERN_MAPPING_TYPE):
         return cls(
             desc=cast(str, in_dict["desc"]),
+            type=cast(str, in_dict["type"]),
             patterns=cast(list[str], in_dict["patterns"]),
             push=cast(bool, in_dict["push"]),
             pull=cast(bool, in_dict["pull"]),
         )
 
 
-FILEPATTERNS_TYPE = list[dict[str, str | list[str] | bool]]
+FILEPATTERNS_TYPE = Sequence[FILEPATTERN_MAPPING_TYPE]
 
 
 class FilePatterns(list[FilePattern]):
@@ -40,14 +43,8 @@ class FilePatterns(list[FilePattern]):
         return cls.from_file_patterns(data)
 
     @classmethod
-    def from_file_patterns(cls, patterns_dicts: FILEPATTERNS_TYPE):
-        items = [
-            FilePattern(
-                desc=cast(str, pdict["desc"]),
-                patterns=cast(list[str], pdict["patterns"]),
-                push=cast(bool, pdict["push"]),
-                pull=cast(bool, pdict["pull"]),
-            )
-            for pdict in patterns_dicts
-        ]
-        return cls(items)
+    def from_file_patterns(
+        cls,
+        patterns_dicts: FILEPATTERNS_TYPE,
+    ):
+        return cls([FilePattern.from_dict(pdict) for pdict in patterns_dicts])
