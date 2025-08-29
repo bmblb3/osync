@@ -54,9 +54,13 @@
             ]
           );
 
+      inherit (pkgs.callPackages pyproject-nix.build.util { }) mkApplication;
     in
     {
-      packages.x86_64-linux.default = pythonSet.mkVirtualEnv "${appname}-env" workspace.deps.default;
+      packages.x86_64-linux.default = mkApplication {
+        venv = pythonSet.mkVirtualEnv "${appname}-env" workspace.deps.default;
+        package = pythonSet.${appname};
+      };
 
       apps.x86_64-linux = {
         default = {
