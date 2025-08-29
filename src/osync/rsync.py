@@ -44,4 +44,5 @@ class RsyncCommand:
         self.args += [self.source, self.dest]
 
     def execute(self) -> None:
+        print(" ".join(self.args))
         _ = subprocess.run(self.args)

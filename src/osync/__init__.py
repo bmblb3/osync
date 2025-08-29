@@ -25,7 +25,7 @@ def main():
     command = RsyncCommand(
         direction=direction,
         source=source,
-        dest=dest,
+        dest="/".join(dest.split("/")[:-1]) + "/.",
         filter_groups=filter_groups,
         force=args.force,
         dry_run=args.dry_run,
