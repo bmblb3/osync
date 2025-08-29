@@ -3,6 +3,8 @@ from typing import cast
 
 import yaml
 
+FILEPATTERN_DICT_TYPE = dict[str, str | list[str] | bool]
+
 
 @dataclass
 class FilePattern:
@@ -16,8 +18,17 @@ class FilePattern:
             raise ValueError(f"Patterns list for {self.desc} is empty")
         return [f"--include={p}" for p in self.patterns]
 
+    @classmethod
+    def from_dict(cls, in_dict: FILEPATTERN_DICT_TYPE):
+        return cls(
+            desc=cast(str, in_dict["desc"]),
+            patterns=cast(list[str], in_dict["patterns"]),
+            push=cast(bool, in_dict["push"]),
+            pull=cast(bool, in_dict["pull"]),
+        )
 
-filepatterns_type = list[dict[str, str | list[str] | bool]]
+
+FILEPATTERNS_TYPE = list[dict[str, str | list[str] | bool]]
 
 
 class FilePatterns(list[FilePattern]):
@@ -25,11 +36,11 @@ class FilePatterns(list[FilePattern]):
     def from_yml(cls, file: str):
         with open(file, "r") as f:
             data = yaml.safe_load(f)  # pyright:ignore[reportAny]
-        data = cast(filepatterns_type, data)
+        data = cast(FILEPATTERNS_TYPE, data)
         return cls.from_file_patterns(data)
 
     @classmethod
-    def from_file_patterns(cls, patterns_dicts: filepatterns_type):
+    def from_file_patterns(cls, patterns_dicts: FILEPATTERNS_TYPE):
         items = [
             FilePattern(
                 desc=cast(str, pdict["desc"]),
