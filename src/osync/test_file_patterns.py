@@ -4,8 +4,7 @@ import unittest
 
 import yaml
 
-from .file_pattern import FilePattern
-from .file_patterns_builder import FilePatterns
+from .file_pattern import FilePattern, FilePatterns
 
 
 class TestFilePatternsBuilder(unittest.TestCase):

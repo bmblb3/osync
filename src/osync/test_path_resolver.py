@@ -26,6 +26,7 @@ class TestPathResolver(unittest.TestCase):
         shutil.rmtree(self.proxy_root, ignore_errors=True)
         shutil.rmtree(self.cwd, ignore_errors=True)
 
+    # ENV_VAR
     def test_env_var(self):
         with patch.dict(os.environ, {"OSYNC_PROXY_ROOT": "test_value"}):
             assert os.environ["OSYNC_PROXY_ROOT"] == "test_value"
