@@ -35,7 +35,7 @@ class RsyncCommand:
                 arg
                 for filter_group in self.filter_groups
                 for arg in filter_group.rsync_args
-                if filter_group.direction == self.direction
+                if Direction(filter_group.direction) == Direction(self.direction)
             ] + ["--exclude=*"]
 
         if self.dry_run:

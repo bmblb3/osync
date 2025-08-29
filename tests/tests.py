@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from dataclasses import dataclass
 from pathlib import Path
-from typing import final, override
+from typing import override
 from unittest.mock import patch
 
 from osync import cli
@@ -359,6 +359,30 @@ class TestRsyncCommand(unittest.TestCase):
         self.assertNotIn("pushargB1", rsync_cmd.args)
         self.assertNotIn("pushargB2", rsync_cmd.args)
         self.assertIn("pullarg", rsync_cmd.args)
+
+    def test_string_push(self):
+        rsync_cmd = rsynccommand()
+        rsync_cmd.direction = "push"  # pyright:ignore[reportAttributeAccessIssue]
+        rsync_cmd.filter_groups = [  # pyright:ignore[reportAttributeAccessIssue]
+            DummmyFilterGroup(direction=Direction.PUSH, rsync_args=["pusharg"]),
+            DummmyFilterGroup(direction=Direction.PULL, rsync_args=["pullarg"]),
+        ]
+        rsync_cmd.build()
+
+        self.assertIn("pusharg", rsync_cmd.args)
+        self.assertNotIn("pullarg", rsync_cmd.args)
+
+    def test_string_other_way_push(self):
+        rsync_cmd = rsynccommand()
+        rsync_cmd.direction = Direction.PUSH
+        rsync_cmd.filter_groups = [  # pyright:ignore[reportAttributeAccessIssue]
+            DummmyFilterGroup(direction="push", rsync_args=["pusharg"]),  # pyright:ignore[reportArgumentType]
+            DummmyFilterGroup(direction="pull", rsync_args=["pullarg"]),  # pyright:ignore[reportArgumentType]
+        ]
+        rsync_cmd.build()
+
+        self.assertIn("pusharg", rsync_cmd.args)
+        self.assertNotIn("pullarg", rsync_cmd.args)
 
     def test_src_dest_come_last(self):
         rsync_cmd = rsynccommand()
